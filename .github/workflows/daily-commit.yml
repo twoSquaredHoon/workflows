@@ -1,0 +1,48 @@
+name: Daily commit
+
+on:
+  schedule:
+    # 23:00 KST (UTC+9)
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  daily-log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Append today's log and push
+        env:
+          COMMIT_EMAIL: ${{ secrets.COMMIT_EMAIL }}
+          GIT_AUTHOR_NAME: ${{ github.actor }}
+          GIT_COMMITTER_NAME: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${COMMIT_EMAIL}" ]; then
+            echo "COMMIT_EMAIL secret is not set"
+            exit 1
+          fi
+
+          DATE="$(TZ=Asia/Seoul date +%Y-%m-%d)"
+          LOG_FILE="log/daily.md"
+
+          if grep -qE "^${DATE}( |$)" "${LOG_FILE}"; then
+            echo "Already logged ${DATE}; skipping"
+            exit 0
+          fi
+
+          printf '%s | auto\n' "${DATE}" >> "${LOG_FILE}"
+
+          git config user.name "${GIT_AUTHOR_NAME}"
+          git config user.email "${COMMIT_EMAIL}"
+          git add "${LOG_FILE}"
+          git commit -m "chore: daily log ${DATE}"
+          git push
