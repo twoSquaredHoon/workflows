@@ -6,6 +6,19 @@ The commit is authored as you (not `github-actions[bot]`) so it can count on you
 
 Private repos are fine if GitHub → Settings → Profile → **Include private contributions** is on.
 
+## Create the GitHub repo and push
+
+This repo already has an initial commit on `main`. Creating the GitHub remote needs you to be logged in (`gh auth login` or GitHub.com).
+
+```bash
+gh auth login
+gh repo create workflows --private --source=. --remote=origin --push
+```
+
+If `workflows` is already taken on your account, pass another name as the first argument. Private is fine if **Include private contributions** is on in your GitHub profile.
+
+Then add the two Actions secrets below and run the workflow once by hand.
+
 ## One-time GitHub secrets
 
 Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
