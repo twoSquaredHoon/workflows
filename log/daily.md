@@ -1,5 +1,6 @@
 # Daily log
 
-One line per day. The scheduled workflow appends a row only if today's date is missing.
+One line per day. `scripts/daily_push.sh` appends a row only if today's
+date (KST) is missing — run automatically via launchd, or by hand.
 
 2026-08-21 | auto
