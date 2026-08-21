@@ -1,40 +1,52 @@
 # Daily GitHub commit
 
-Scheduled safety-net: if this repo has no log line for today (Korea time), append one and commit. Days you already logged are skipped.
+Local safety-net: every time you log into your Mac — and once an hour after
+that while you're logged in — a script checks whether `log/daily.md` has an
+entry for today (Korea time). If not, it appends one, commits, and pushes,
+authored as you, so it counts on your GitHub contribution graph. Days you've
+already logged (by hand or by the script) are skipped.
 
-The commit is authored as you (not `github-actions[bot]`) so it can count on your contribution graph. That only works after the secrets below are set, the commit email is **verified** on GitHub, and the change lands on the default branch.
+No GitHub Actions, no repo secrets, no PAT — it runs on your machine using
+whatever git credentials already let you push here.
 
-Private repos are fine if GitHub → Settings → Profile → **Include private contributions** is on.
+Private repos are fine if GitHub → Settings → Profile → **Include private
+contributions** is on.
 
-## Create the GitHub repo and push
+## One-time setup
 
-This repo already has an initial commit on `main`. Creating the GitHub remote needs you to be logged in (`gh auth login` or GitHub.com).
+1. Confirm `git push` already works from a normal terminal in this repo
+   (SSH key or credential helper already set up — nothing extra needed if
+   you can already push here today).
+2. Install the LaunchAgent so macOS runs the script automatically:
+
+   ```bash
+   mkdir -p ~/Library/LaunchAgents
+   cp launchd/com.twosquaredhoon.workflows.dailypush.plist ~/Library/LaunchAgents/
+   launchctl unload ~/Library/LaunchAgents/com.twosquaredhoon.workflows.dailypush.plist 2>/dev/null
+   launchctl load ~/Library/LaunchAgents/com.twosquaredhoon.workflows.dailypush.plist
+   ```
+
+That's it. It now fires at every login, plus once an hour while you're
+logged in (harmless — it's a no-op if today's already logged; the hourly
+run just means it doesn't depend on logging out and back in). Remove the
+`StartInterval` key from the plist before installing if you only want it
+to run at login.
+
+## Manual test / one-off run
+
+Run it by hand any time, one line:
 
 ```bash
-gh auth login
-gh repo create workflows --private --source=. --remote=origin --push
+bash ~/Documents/2.Area/workflows/scripts/daily_push.sh
 ```
 
-If `workflows` is already taken on your account, pass another name as the first argument. Private is fine if **Include private contributions** is on in your GitHub profile.
+Then check `log/daily.md` and your [contribution
+graph](https://github.com) (can take a few minutes). Running it twice the
+same day is a no-op the second time.
 
-Then add the two Actions secrets below and run the workflow once by hand.
+## Uninstall
 
-## One-time GitHub secrets
-
-Repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
-
-| Secret | Value |
-| --- | --- |
-| `COMMIT_EMAIL` | A **verified** email on your GitHub account, or the `noreply` address shown at [GitHub email settings](https://github.com/settings/emails) (often `ID+username@users.noreply.github.com`). |
-| `GH_PAT` | A classic [personal access token](https://github.com/settings/tokens) with the `repo` scope. Used so checkout/push is attributed to you. Do not use the default `GITHUB_TOKEN` for this — those commits show as `github-actions[bot]` and do not count on your graph. |
-
-No secrets belong in this repository’s files.
-
-## Manual test
-
-1. Confirm `COMMIT_EMAIL` and `GH_PAT` are saved.
-2. GitHub → **Actions** → **Daily commit** → **Run workflow** → **Run workflow**.
-3. Open the run. It should commit `chore: daily log YYYY-MM-DD` as **you**, not `github-actions[bot]`.
-4. Check `log/daily.md` and your [contribution graph](https://github.com) (can take a few minutes). Running it twice the same day should skip.
-
-The schedule is `0 14 * * *` (23:00 KST). GitHub’s graph uses the timezone on your GitHub profile — set that to Seoul if it is not already.
+```bash
+launchctl unload ~/Library/LaunchAgents/com.twosquaredhoon.workflows.dailypush.plist
+rm ~/Library/LaunchAgents/com.twosquaredhoon.workflows.dailypush.plist
+```
