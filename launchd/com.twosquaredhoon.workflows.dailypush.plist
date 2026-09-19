@@ -7,7 +7,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/seunghoon/Documents/2.Area/workflows/scripts/daily_push.sh</string>
+        <string>/Users/seunghoon/workflows/scripts/daily_push.sh</string>
     </array>
     <key>EnvironmentVariables</key>
     <dict>
@@ -19,8 +19,8 @@
     <key>StartInterval</key>
     <integer>3600</integer>
     <key>StandardOutPath</key>
-    <string>/Users/seunghoon/Documents/2.Area/workflows/log/launchd.out.log</string>
+    <string>/Users/seunghoon/workflows/log/launchd.out.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/seunghoon/Documents/2.Area/workflows/log/launchd.err.log</string>
+    <string>/Users/seunghoon/workflows/log/launchd.err.log</string>
 </dict>
 </plist>
