@@ -13,8 +13,9 @@ DATE="$(TZ=Asia/Seoul date +%Y-%m-%d)"
 
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S %Z')" "$1"; }
 
+GIT_CHECK_ERR="$(git rev-parse --is-inside-work-tree 2>&1 1>/dev/null)"
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  log "Not a git repo: $REPO_DIR"
+  log "Not a git repo: $REPO_DIR -- HOME=$HOME PATH=$PATH USER=$(whoami 2>&1) -- git said: ${GIT_CHECK_ERR:-<no stderr>}"
   exit 1
 fi
 
