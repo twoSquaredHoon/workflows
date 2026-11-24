@@ -96,3 +96,4 @@ date (KST) is missing — run automatically via launchd, or by hand.
 2026-11-21 | auto
 2026-11-22 | auto
 2026-11-23 | auto
+2026-11-25 | auto
